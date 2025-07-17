@@ -1,0 +1,54 @@
+openapi: 3.1.1
+info:
+  title: すわべパン
+  summary: パン在庫管理アプリのバックエンドAPI
+  version: 0.1.0
+paths:
+  /stores:
+    get:
+      summary: Get stores
+      description: 店舗IDの一覧を取得する
+      operationId: GetStores
+      responses:
+        200:
+          description: 成功時
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stores'
+    post:
+      summary: Create a store
+      description: 店舗を作成する
+      operationId: CreateStore
+      responses:
+        201:
+          description: 作成成功時
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Store'
+  /stores/{id}:
+    delete:
+      summary: Delete a store
+      description: 指定した店舗を削除する
+      operationId: DeleteStore
+      responses:
+        204:
+          description: 削除成功時
+components:
+  schemas:
+    Stores:
+      type: object
+      required:
+        - store_ids
+      properties:
+        store_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+    Store:
+      type: object
+      properties:
+        store_name:
+          type: string
