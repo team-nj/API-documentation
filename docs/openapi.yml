@@ -452,6 +452,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /download_all:
+    get:
+      summary: Download all records
+      tags:
+        - Download
+      description: 全ての販売・廃棄記録をCSV形式で取得する
+      operationId: DownloadAllRecords
+      responses:
+        200:
+          description: ダウンロード成功
+          content:
+            text/csv:
+              schema:
+                type: string
 components:
   schemas:
     Error:
