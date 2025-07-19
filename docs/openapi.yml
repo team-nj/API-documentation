@@ -1,54 +1,548 @@
-openapi: 3.1.1
+openapi: 3.0.0
 info:
   title: すわべパン
   summary: パン在庫管理アプリのバックエンドAPI
   version: 0.1.0
 paths:
+  /login:
+    post:
+      summary: Login
+      tags:
+        - Login
+      description: ログイン情報を照合する
+      operationId: Login
+      requestBody:
+        description: ログイン情報
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - store_id
+                - password
+              properties:
+                store_id:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: ログイン成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Login'
+        401:
+          description: ログイン失敗
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /stores:
     get:
       summary: Get stores
+      tags:
+        - Stores
       description: 店舗IDの一覧を取得する
       operationId: GetStores
       responses:
         200:
-          description: 成功時
+          description: 取得成功
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Stores'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
     post:
       summary: Create a store
+      tags:
+        - Stores
       description: 店舗を作成する
       operationId: CreateStore
       responses:
         201:
-          description: 作成成功時
+          description: 作成成功
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Store'
-  /stores/{id}:
-    delete:
-      summary: Delete a store
-      description: 指定した店舗を削除する
-      operationId: DeleteStore
-      responses:
-        204:
-          description: 削除成功時
-components:
-  schemas:
-    Stores:
-      type: object
-      required:
-        - store_ids
-      properties:
-        store_ids:
-          type: array
-          items:
+        409:
+          description: ユーザーIDの重複
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /stores/{store_id}:
+    put:
+      summary: Deactivate a store
+      tags:
+        - Stores
+      description: 指定した店舗を無効化する
+      operationId: DeactivateStore
+      parameters:
+        - name: store_id
+          in: path
+          required: true
+          schema:
             type: string
             format: uuid
+          description: 店舗ID
+      responses:
+        204:
+          description: 無効化成功
+        404:
+          description: 店舗が存在しない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /bread_types:
+    get:
+      summary: Get all bread types
+      tags:
+        - BreadTypes
+      description: 全てのパンの種類を取得する
+      operationId: GetBreadTypes
+      responses:
+        200:
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BreadTypes'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a bread type
+      tags:
+        - BreadTypes
+      description: パンの種類を作成する
+      operationId: CreateBreadType
+      responses:
+        201:
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BreadType'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /bread_types/{bread_type_id}:
+    put:
+      summary: Deactivate a bread type
+      tags:
+        - BreadTypes
+      description: パンの種類を無効化する
+      operationId: DeactivateBreadType
+      parameters:
+        - name: bread_type_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: パン種類ID
+      responses:
+        204:
+          description: 無効化成功
+        404:
+          description: パンの種類が存在しない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /records/{store_id}:
+    get:
+      summary: Get records of a store
+      tags:
+        - Records
+      description: 店舗の販売・廃棄記録を取得する
+      operationId: GetRecords
+      parameters:
+        - name: store_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: 店舗ID
+        - name: before
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: 検索の開始日
+      responses:
+        200:
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Records'
+        400:
+          description: 不正なパラメーター
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        404:
+          description: 店舗が存在しない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /records/all:
+    get:
+      summary: Get records of all stores
+      tags:
+        - Records
+      description: 店舗の販売・廃棄記録を取得する
+      operationId: GetAllRecords
+      parameters:
+        - name: before
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: 検索の開始日
+      responses:
+        200:
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Records'
+        400:
+          description: 不正なパラメーター
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /sales_records:
+    post:
+      summary: Create a sales record
+      tags:
+        - Records
+      description: 販売記録を作成する
+      operationId: CreateSalesRecord
+      requestBody:
+        description: 販売記録
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - store_id
+                - bread_type_id
+                - quantity
+              properties:
+                store_id:
+                  type: string
+                  format: uuid
+                bread_type_id:
+                  type: string
+                  format: uuid
+                quantity:
+                  type: integer
+                  minimum: 1
+      responses:
+        201:
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SalesRecord'
+        400:
+          description: 不正なパラメーター
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /disposal_records:
+    post:
+      summary: Create a disposal record
+      tags:
+        - Records
+      description: 廃棄記録を作成する
+      operationId: CreateDisposalRecord
+      requestBody:
+        description: 廃棄記録
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - store_id
+                - bread_type_id
+                - quantity
+                - disposal_reason
+              properties:
+                store_id:
+                  type: string
+                  format: uuid
+                bread_type_id:
+                  type: string
+                  format: uuid
+                quantity:
+                  type: integer
+                  minimum: 1
+                disposal_reason:
+                  type: string
+      responses:
+        201:
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisposalRecord'
+        400:
+          description: 不正なパラメーター
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /disposal_reasons:
+    get:
+      summary: Get disposal reasons
+      tags:
+        - DisposalReasons
+      description: 全ての廃棄理由を取得する
+      operationId: GetDisposalReasons
+      responses:
+        200:
+          description: 取得成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisposalReasons'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create a disposal reason
+      tags:
+        - DisposalReasons
+      description: 廃棄理由を作成する
+      operationId: CreateDisposalReason
+      requestBody:
+        description: 廃棄理由
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - disposal_reason
+              properties:
+                disposal_reason:
+                  type: string
+      responses:
+        201:
+          description: 作成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DisposalReason'
+        400:
+          description: 不正なパラメーター
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error_message:
+          type: string
+    Login:
+      type: object
+      properties:
+        page_id:
+          type: string
+    Stores:
+      type: object
+      properties:
+        stores:
+          type: array
+          items:
+            $ref: '#/components/schemas/Store'
     Store:
       type: object
       properties:
+        store_id:
+          type: string
+          format: uuid
         store_name:
+          type: string
+    BreadTypes:
+      type: object
+      properties:
+        bread_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/BreadType'
+    BreadType:
+      type: object
+      properties:
+        bread_type_id:
+          type: string
+          format: uuid
+        bread_type_name:
+          type: string
+    Records:
+      type: object
+      properties:
+        sales_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/Record'
+    Record:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - 販売
+            - 廃棄
+        store_name:
+          type: string
+        bread_type_name:
+          type: string
+        quantity:
+          type: integer
+          minimum: 1
+        disposal_reason:
+          type: string
+        created_at:
+          type: string
+          format: datetime
+    SalesRecord:
+      type: object
+      properties:
+        sales_record_id:
+          type: string
+          format: uuid
+        store_id:
+          type: string
+          format: uuid
+        bread_type_id:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+        created_at:
+          type: string
+          format: datetime
+    DisposalRecord:
+      type: object
+      properties:
+        sales_record_id:
+          type: string
+          format: uuid
+        store_id:
+          type: string
+          format: uuid
+        bread_type_id:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+        disposal_reason:
+          type: string
+        created_at:
+          type: string
+          format: datetime
+    DisposalReasons:
+      type: object
+      properties:
+        disposal_reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/DisposalReason'
+    DisposalReason:
+      type: object
+      properties:
+        disposal_reason_id:
+          type: string
+          format: uuid
+        disposal_reason:
           type: string
