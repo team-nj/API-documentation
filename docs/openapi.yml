@@ -3,6 +3,34 @@ info:
   title: すわべパン
   summary: パン在庫管理アプリのバックエンドAPI
   version: 0.1.0
+tags:
+  - name: Models
+    x-displayName: Models
+    description: |
+      <h2>Error</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/Error" />
+      <h2>Login</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/Login" />
+      <h2>Stores</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/Stores" />
+      <h2>Store</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/Store" />
+      <h2>BreadTypes</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/BreadTypes" />
+      <h2>BreadType</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/BreadType" />
+      <h2>Records</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/Records" />
+      <h2>Record</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/Record" />
+      <h2>SalesRecord</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/SalesRecord" />
+      <h2>DisposalRecord</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/DisposalRecord" />
+      <h2>DisposalReasons</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/DisposalReasons" />
+      <h2>DisposalReason</h2>
+      <SchemaDefinition schemaRef="#/components/schemas/DisposalReason" />
 paths:
   /login:
     post:
