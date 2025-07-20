@@ -131,7 +131,6 @@ paths:
           required: true
           schema:
             type: string
-            format: uuid
           description: 店舗ID
       responses:
         204:
@@ -230,7 +229,6 @@ paths:
           required: true
           schema:
             type: string
-            format: uuid
           description: 店舗ID
         - name: before
           in: query
@@ -452,6 +450,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /disposal_reasons/{disposal_reason_id}:
+    delete:
+      summary: Delete a disposal reason
+      tags:
+        - DisposalReasons
+      description: 廃棄理由を削除する
+      parameters:
+        - name: disposal_reason_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: 廃棄理由ID
+      responses:
+        204:
+          description: 削除成功
+        404:
+          description: 廃棄理由が存在しない
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /download_all:
     get:
       summary: Download all records
@@ -466,6 +493,12 @@ paths:
             text/csv:
               schema:
                 type: string
+        500:
+          description: サーバーエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
 components:
   schemas:
     Error:
@@ -473,16 +506,19 @@ components:
       properties:
         error_message:
           type: string
+          description: エラーメッセージ
     Login:
       type: object
       properties:
         page_id:
           type: string
+          description: 遷移先のページのID
     Stores:
       type: object
       properties:
         stores:
           type: array
+          description: 店舗の一覧
           items:
             $ref: '#/components/schemas/Store'
     Store:
@@ -490,14 +526,16 @@ components:
       properties:
         store_id:
           type: string
-          format: uuid
+          description: 店舗ID
         store_name:
           type: string
+          description: 店舗名
     BreadTypes:
       type: object
       properties:
         bread_types:
           type: array
+          description: パンの種類の一覧
           items:
             $ref: '#/components/schemas/BreadType'
     BreadType:
@@ -506,13 +544,16 @@ components:
         bread_type_id:
           type: string
           format: uuid
+          description: パン種類ID
         bread_type_name:
           type: string
+          description: パンの種類名
     Records:
       type: object
       properties:
-        sales_records:
+        records:
           type: array
+          description: 販売・廃棄記録の一覧
           items:
             $ref: '#/components/schemas/Record'
     Record:
@@ -520,64 +561,82 @@ components:
       properties:
         type:
           type: string
+          description: 販売・廃棄記録のどちらか
           enum:
             - 販売
             - 廃棄
         store_name:
           type: string
+          description: 店舗名
         bread_type_name:
           type: string
+          description: パンの種類名
         quantity:
           type: integer
           minimum: 1
+          description: パンの数量
         disposal_reason:
           type: string
+          description: パンの廃棄理由（販売の場合は空文字列）
         created_at:
           type: string
           format: datetime
+          description: 記録の作成日時
     SalesRecord:
       type: object
       properties:
         sales_record_id:
           type: string
           format: uuid
+          description: 販売記録ID
         store_id:
           type: string
           format: uuid
+          description: 店舗ID
         bread_type_id:
           type: string
           format: uuid
+          description: パン種類ID
         quantity:
           type: integer
           minimum: 1
+          description: パンの数量
         created_at:
           type: string
           format: datetime
+          description: 販売記録の作成日時
     DisposalRecord:
       type: object
       properties:
-        sales_record_id:
+        disposal_record_id:
           type: string
           format: uuid
+          description: 廃棄記録ID
         store_id:
           type: string
           format: uuid
+          description: 店舗ID
         bread_type_id:
           type: string
           format: uuid
+          description: パン種類ID
         quantity:
           type: integer
           minimum: 1
+          description: パンの数量
         disposal_reason:
           type: string
+          description: 廃棄理由
         created_at:
           type: string
           format: datetime
+          description: 廃棄記録の作成日時
     DisposalReasons:
       type: object
       properties:
         disposal_reasons:
           type: array
+          description: 廃棄理由の一覧
           items:
             $ref: '#/components/schemas/DisposalReason'
     DisposalReason:
@@ -586,5 +645,7 @@ components:
         disposal_reason_id:
           type: string
           format: uuid
+          description: 廃棄理由ID
         disposal_reason:
           type: string
+          description: 廃棄理由
